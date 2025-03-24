@@ -1,13 +1,11 @@
 package com.keyin.golftournament.services;
 
-// Spring imports
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-// Java standard library imports
 import java.util.List;
 
-// Project imports
 import com.keyin.golftournament.models.Tournament;
 import com.keyin.golftournament.repositories.TournamentRepository;
 

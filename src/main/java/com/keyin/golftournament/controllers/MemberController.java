@@ -1,19 +1,14 @@
 package com.keyin.golftournament.controllers;
 
-// 1) Spring web annotations
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.keyin.golftournament.services.MemberService;
+import com.keyin.golftournament.dto.MemberDTO;
+import com.keyin.golftournament.mappers.MemberMapper;
 import com.keyin.golftournament.models.Member;
+import com.keyin.golftournament.services.MemberService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/members")
@@ -27,22 +22,34 @@ public class MemberController {
     }
 
     @GetMapping
-    public List<Member> getAllMembers() {
-        return memberService.getAllMembers();
+    public List<MemberDTO> getAllMembers() {
+
+        return memberService.getAllMembers().stream()
+                .map(MemberMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public Member getMember(@PathVariable Long id) {
-        return memberService.getMemberById(id);
+    public MemberDTO getMember(@PathVariable Long id) {
+        Member member = memberService.getMemberById(id);
+        return MemberMapper.toDTO(member);
     }
 
     @PostMapping
-    public Member createMember(@RequestBody Member member) {
-        return memberService.createMember(member);
+    public MemberDTO createMember(@RequestBody MemberDTO memberDTO) {
+        // Convert DTO -> Entity
+        Member memberEntity = MemberMapper.toEntity(memberDTO);
+        // Save via service
+        Member savedMember = memberService.createMember(memberEntity);
+        // Convert back to DTO
+        return MemberMapper.toDTO(savedMember);
     }
 
     @DeleteMapping("/{id}")
     public void deleteMember(@PathVariable Long id) {
         memberService.deleteMember(id);
     }
+
+
+
 }
